@@ -27,21 +27,24 @@
       parted:
         device: "{{ new_disk }}"
         number: 1
+        label: gpt
         flags: [ boot ]
         state: present
         part_type: primary
         part_end: "{{ boot_size }}MB"
-        label: gpt
+
 
     - name: Create a new root partition
       parted:
         device: "{{ new_disk }}"
         number: 2
+        label: gpt
         flags: [ lvm ]
         state: present
         part_type: primary
         part_start: "{{ boot_size|int + 1 }}MB"
         part_end: 100%
+     
 
     - name: Create {{ vg_name }} volume group on top of {{ new_disk }}{{ root_part }}
       lvg:
@@ -103,7 +106,7 @@
       filesystem:
         fstype: "{{ boot_fs }}"
         dev: "{{ new_disk }}{{ boot_part }}"
-        #force: yes
+        force: yes
 
     # - name: Create {{ boot_fs }} filesystem on {{ new_disk }}{{ boot_part }}
     #   command: "mkfs.{{ boot_fs }} {{ new_disk }}{{ boot_part }}"
